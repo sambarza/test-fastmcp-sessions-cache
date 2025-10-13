@@ -3,6 +3,7 @@ from fastmcp import Client
 
 mcp_open_clients = {}
 
+
 async def create_mcp_client_session(user: str):
     print("Creating new client for user:", user)
     client = Client("http://localhost:9000/mcp")
@@ -12,6 +13,7 @@ async def create_mcp_client_session(user: str):
     print("Client context saved for user:", user)
 
     return mcp_open_clients[user]
+
 
 async def call_tool(user: str):
 
@@ -24,23 +26,29 @@ async def call_tool(user: str):
 
     print(result)
 
+
 async def close_session(user: str):
     if user in mcp_open_clients:
         client = mcp_open_clients[user]
         await client.__aexit__(None, None, None)
-        
+
+
 async def test():
 
-    for i in range(200):
+    sessions_count = 10
+
+    for i in range(sessions_count):
         await call_tool(f"Alice {i}")
 
-    await call_tool(f"Alice 10")
+    input("Press Enter to call tool for Alice 1...")
+
+    await call_tool(f"Alice 1")
 
     input("Press Enter to close sessions...")
 
-    for i in range(200):
+    for i in range(sessions_count):
         await close_session(f"Alice {i}")
-    
+
     input("Press Enter to exit...")
 
 asyncio.run(test())
